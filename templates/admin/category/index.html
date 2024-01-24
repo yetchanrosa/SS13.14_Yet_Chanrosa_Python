@@ -1,0 +1,310 @@
+{% extends 'admin/master.html' %}
+{% block main_content %}
+    <div id="app" class="container-fluid">
+        <div v-if="successMessage" class="alert alert-success" role="alert">
+            [[ successMessage ]]
+        </div>
+        <div v-if="deleteSuccessMessage" class="alert alert-success" role="alert">
+            [[ deleteSuccessMessage ]]
+        </div>
+        <div v-if="editSuccessMessage" class="alert alert-success" role="alert">
+            [[ deleteSuccessMessage ]]
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="m-0">
+                                    <i class="fas fa-cube"></i>
+                                    Category list
+                                </h5>
+                            </div>
+                            <div class="col-6">
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-outline-success float-right" data-toggle="modal"
+                                        data-target="#addcate">
+                                    Add Category
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless table-striped">
+                                <thead>
+                                <tr class="bg-primary">
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td v-if="this.category_list.length == 0" colspan="7" class="text-center">
+                                        <span style="color: #cccc">no record...</span>
+                                    </td>
+                                </tr>
+                                <template v-if="this.category_list.length> 0">
+                                    <tr v-for="(item,index) in this.category_list">
+                                        <td>[[ index + 1]]</td>
+                                        <td>[[ item.name ]]</td>
+                                        <td class="d-flex" style="gap:10px">
+
+                                            <button type="button" @click="getCateName(item.id, item.name)"
+                                                    class="btn btn-outline-secondary  "
+                                                    data-toggle="modal"
+                                                    data-target="#editcate">
+                                                Edit
+                                                <i class="far fa-edit"></i>
+                                            </button>
+
+
+                                            <button type="button" @click="getID(item.id)"
+                                                    class="btn btn-outline-danger "
+                                                    data-toggle="modal"
+                                                    data-target="#deletecate">
+                                                Delete
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+
+                                        </td>
+                                    </tr>
+                                </template>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Add -->
+        <div class="modal fade" id="addcate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Category 😎</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" @submit="addCategory">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">Name <span class="text-danger">*</span></label>
+                                <input type="text" v-model="name" name="name" class="form-control" id="name"
+                                       placeholder="Enter your name" required>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary"
+                                >Save changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+        <!-- Modal delete -->
+        <div class="modal fade" id="deletecate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Category🤨</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure? You want to Delete?</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="daleteCategory"
+                        >Delete
+                        </button>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+        <!-- Modal edit -->
+        <div class="modal fade" id="editcate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Category 😎</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" @submit.prevent="editCategory">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">Name <span class="text-danger">*</span></label>
+                                <input type="text" v-model="new_name" name="editname" class="form-control" id="editname"
+
+                                       required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- End -->
+
+    </div>
+
+    <script>
+        var vue_obj = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: {
+                category_list: [],
+                name: "",
+                successMessage: '',
+                deleteSuccessMessage: '',
+                editSuccessMessage:'',
+                categoryId: 0,
+                new_name: "",
+
+            },
+            methods: {
+                allData() {
+                    axios.get('http://127.0.0.1:5000/api/category').then(response => {
+                        this.category_list = response.data;
+                    });
+                },
+                getCateName(id, name) {
+                    this.new_name = name;
+                    this.categoryId = id;
+                },
+                addCategory(e) {
+                    e.preventDefault();
+
+                    axios.post('http://127.0.0.1:5000/api/category', {"name": this.name}, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.data.success) {
+                                $('#addcate').modal('hide');
+                                this.category_list.push(response.data.category);
+                                this.successMessage = 'Category has been added successfully!';  // Set success message
+                                this.name = '';
+                                this.allData();
+
+                                // Clear success message after 2 seconds
+                                setTimeout(() => {
+                                    this.clearSuccessMessage();
+                                }, 2000);
+                            } else {
+                                alert('Failed to add category: ' + response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('An error occurred while adding the category.');
+                            console.error(error);
+                        });
+                },
+                getID(id) {
+                    //console.log(id)
+                    this.categoryId = id
+                },
+
+                clearSuccessMessage() {
+                    this.successMessage = '';
+                    this.deleteSuccessMessage = '';
+                    this. editSuccessMessage='';
+                },
+
+                async daleteCategory() {
+                    try {
+                        //console.log(this.categoryId)
+                        const response = await axios.delete(`http://127.0.0.1:5000/api/category/${this.categoryId}`);
+
+                        if (response.data.success) {
+                            $('#deletecate').modal('hide');
+                            // Successful deletion, handle as needed (e.g., update category_list)
+                            this.allData();
+                            this.deleteSuccessMessage = 'Category deleted successfully';
+                            // You might want to reset categoryId if needed
+                             setTimeout(() => {
+                                    this.clearSuccessMessage();
+                                }, 2000);
+                        } else {
+                            // Handle errors
+                            console.error('Error deleting category:', response.data.message);
+                        }
+                    } catch (error) {
+                        console.error('Unexpected error:', error);
+                    }
+                },
+
+                editCategory() {
+
+                    // Assuming you have the category ID stored in this.categoryId
+                    axios.put(`http://127.0.0.1:5000/api/category/${this.categoryId}`, {"name": this.new_name}, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.data.success) {
+                                $('#editcate').modal('hide');
+
+                                this.successMessage = 'Category edited successfully';
+                                this.allData();
+                                this.new_name = ''
+
+                                 setTimeout(() => {
+                                    this.clearSuccessMessage();
+                                }, 2000);
+                            } else {
+                                alert('Failed to edit category: ' + response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('An error occurred while editing the category.');
+                            console.error(error);
+                        });
+                },
+
+            },
+
+
+            created() {
+                // Your created lifecycle hook code
+            },
+            mounted() {
+                this.allData();
+            }
+        });
+    </script>
+
+    <!-- Your HTML code -->
+
+{% endblock %}
+
+
+
+

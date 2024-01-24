@@ -1,0 +1,63 @@
+{% extends 'admin/master.html' %}
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                   <div class="row">
+                            <div class="col-6">
+                                <h5 class="m-0">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Add student
+                                </h5>
+                            </div>
+                            <div class="col-6">
+                                <a
+                                        href="{{ url_for('indexStudent') }}"
+                                        class="btn btn-outline-secondary float-right"
+                                        role="button"
+                                        aria-disabled="true"
+                                >
+                                     <i class="fas fa-arrow-circle-left"></i>
+                                    Back
+                                </a>
+                            </div>
+                        </div>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="form-group">
+                            <label for="name">Name <span class="text-danger">*</span></label>
+                            <input required type="text" name="name" class="form-control" id="name" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender <span class="text-danger">*</span></label>
+                            <select required name="gender" class="form-control" id="gender">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+
+
+                         <div class="form-group">
+                            <label for="DateOfBirth">Date Of Birth <span class="text-danger">*</span></label>
+                            <input required type="date" name="DateOfBirth" class="form-control" id="DateOfBirth" placeholder="Enter your Date Of Birth">
+                        </div>
+                         <div class="form-group">
+                            <label for="PlaceOfBirth">Place Of Birth <span class="text-danger">*</span></label>
+                            <input required type="text" name="PlaceOfBirth" class="form-control" id="PlaceOfBirth" placeholder="Enter your Place Of Birth">
+                        </div>
+                         <div class="form-group">
+                            <label for="address">Address <span class="text-danger">*</span></label>
+                            <textarea name="address" rows="5" class="form-control" id="address"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary float-right">Submit</button>
+                        <button type="reset" class="btn btn-danger">Reset</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

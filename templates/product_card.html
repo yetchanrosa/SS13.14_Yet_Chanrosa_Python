@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+   <script src="/static/vue.js"></script>
+    <script src="/static/axios.js"></script>
+
+    <title>Product Card</title>
+
+    {% include "header/header.html" %}
+</head>
+
+<body class='snippet-body'>
+<div id="app" class="container mt-5">
+    <div class="row mt-1 p-2"
+         style="border-radius: 5px; position: sticky; top: 0; z-index: 100; background-color: whitesmoke">
+        <a>
+            <button type="button" class="btn btn-outline-primary ml-1 mr-1"
+                    :class="{ 'active': activeCategory === 'all' }" @click="searchByCategory('all')">
+                All
+            </button>
+        </a>
+        <a v-for="(category, index) in category_list" :key="'category_'+index">
+            <button type="button" class="btn btn-outline-primary ml-1 mr-1"
+                    :class="{ 'active': activeCategory === category.id }" style="text-transform: uppercase"
+                    @click="searchByCategory(category.id)">
+                [[ category.name ]]
+            </button>
+        </a>
+
+        <div class="input-group flex-nowrap mt-2">
+            <input v-model="txt_src" type="text" class="form-control" placeholder="name, code, barcode ..."
+                   @input="liveSearch">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div v-for="(item, index) in product_list" :key="'product_'+index" class="col-md-3 col-sm-6">
+            <div class="product-grid mb-4">
+                <div class="product-image">
+                    <a href="#" class="image">
+                        <img src="/static/sting-energy-drink.jpeg" class="img-fluid rounded thumbnail-image">
+                    </a>
+                    <span class="product-discount-label">[[ item.category ]]</span>
+                    <span class="product-discount-label " style="margin-top: 30px; background-color: #366f69">-0%</span>
+                    <ul class="product-links">
+                        <li><a href="#"><i class="fa fa-search"></i></a></li>
+                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                        <li><a href="#"><i class="fa fa-random"></i></a></li>
+                    </ul>
+                    <a href="" class="add-to-cart">Add to Cart</a>
+                </div>
+                <div class="product-content">
+                    <h3 class="title"><a href="#">[[ item.name ]]</a></h3>
+                    <div class="price">
+                        <span class="new-price">[[ item.price ]]</span>
+                        <small class="old-price text-right" style="font-weight: lighter; font-size: 14px">
+                            <del>
+                                $
+                            </del>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue_obj = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            color: 'bg-primary',
+            is_start: false,
+            product_list: [],
+            category_list: [],
+            txt_src: null,
+            typingTimer: null,
+            doneTypingInterval: 500,
+        },
+        methods: {
+            changeColor() {
+                if (this.color == 'bg-primary') {
+                    this.color = 'bg-danger'
+                } else {
+                    this.color = 'bg-primary'
+                }
+            },
+            startInterval() {
+                this.is_start = true
+                this.intervalId = setInterval(() => {
+                    this.changeColor()
+                }, 1000);
+            },
+            stopInterval() {
+                this.is_start = false
+                clearInterval(this.intervalId);
+                this.message = "Interval stopped.";
+            },
+            liveSearch(evt) {
+                let vm = this
+                clearTimeout(this.typingTimer)
+                this.typingTimer = setTimeout(function () {
+                     $("#product_list").LoadingOverlay("show");
+                    let payload = vm.txt_src.trim()
+                    let url = `{{ getBaseUrl() }}/get_product_by_filter?txt_src=${payload}`
+                    axios.get(url).then(response => {
+                        vm.product_list = response.data
+                         $("#product_list").LoadingOverlay("hide");
+                    }).catch(function (error) {
+                        alert('error: ' + error.message)
+                         $("#product_list").LoadingOverlay("hide");
+                    });
+                }, this.doneTypingInterval)
+            },
+            searchByCategory(category_id) {
+                $("#product_list").LoadingOverlay("show");
+                let input = {
+                    'category_id': category_id
+                }
+                axios.post('{{ getBaseUrl() }}/get_product_by_category', input).then(response => {
+                    this.product_list = response.data
+                   $("#product_list").LoadingOverlay("hide");
+                }).catch(function (error) {
+                    alert('error: ' + error.message)
+                   $("#product_list").LoadingOverlay("hide");
+                });
+            },
+        },
+        created() {
+            $.LoadingOverlay("show");
+        },
+        mounted() {
+            axios.get('{{ getBaseUrl() }}/get_all_product').then(response => {
+                this.product_list = response.data.product
+                this.category_list = response.data.category
+                $.LoadingOverlay("hide");
+            }).catch(function (error) {
+                alert('error: ' + error.message)
+                $.LoadingOverlay("hide");
+            });
+        }
+    });
+</script>
+</body>
+
+</html>

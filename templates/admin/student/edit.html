@@ -1,0 +1,101 @@
+{% extends 'admin/master.html' %}
+{% block main_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="m-0">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Update student
+                                </h5>
+                            </div>
+                            <div class="col-6">
+                                <a
+                                        href="{{ url_for('indexStudent') }}"
+                                        class="btn btn-outline-secondary float-right"
+                                        role="button"
+                                        aria-disabled="true"
+                                >
+                                    <i class="fas fa-arrow-circle-left"></i>
+                                    Back
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="exampleInputName">Name <span class="text-danger">*</span></label>
+                                <input
+                                        required
+                                        type="text"
+                                        class="form-control"
+                                        id="exampleInputName"
+                                        name="name"
+                                        placeholder="Enter your name"
+                                        value="{{ row[0]['name'] }}"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputName">Gender <span class="text-danger">*</span></label>
+                                <select
+                                        required
+                                        class="form-control"
+                                        id="exampleInputName"
+                                        name="gender"
+                                >
+                                    <option value="M" {% if row[0]['gender'] == 'M' %}selected{% endif %}>Male
+                                    </option>
+                                    <option value="F" {% if row[0]['gender'] == 'F' %}selected{% endif %}>
+                                        Female
+                                    </option>
+                                </select>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="exampleInputName">Date Of Birth <span class="text-danger">*</span></label>
+                                <input
+                                        required
+                                        type="date"
+                                        class="form-control"
+                                        id="exampleInputName"
+                                        name="DateOfBirth"
+
+                                        value="{{ row[0]['DateOfBirth'] }}"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputName">Place Of Birth <span class="text-danger">*</span></label>
+                                <input
+                                        required
+
+                                        class="form-control"
+                                        id="exampleInputName"
+                                        name="PlaceOfBirth"
+
+                                        value="{{ row[0]['PlaceOfBirth'] }}"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputName">Address <span class="text-danger">*</span></label>
+                                <textarea
+                                        rows="5"
+                                        class="form-control"
+                                        id="exampleInputName"
+                                        name="address"
+                                >{{ row[0]['address'] }}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary float-right">Update</button>
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
